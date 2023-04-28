@@ -19,7 +19,7 @@ defmodule PhoenixPages.MixProject do
       package: [
         licenses: ["MIT"],
         links: %{"GitHub" => @url},
-        files: ~w(lib themes .formatter.exs CHANGELOG.md LICENSE mix.exs README.md)
+        files: ~w(css lib .formatter.exs CHANGELOG.md LICENSE mix.exs README.md)
       ],
       docs: [
         main: "readme",
@@ -36,7 +36,11 @@ defmodule PhoenixPages.MixProject do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
+      {:earmark, "~> 1.4"},
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
+      {:phoenix, "~> 1.6"},
+      {:phoenix_html, "~> 3.3"},
+      {:yaml_elixir, "~> 2.9"}
     ]
   end
 
