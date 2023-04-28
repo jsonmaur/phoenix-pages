@@ -24,7 +24,8 @@ defmodule PhoenixPagesTest do
     end
 
     test "should render a markdown file with options", ctx do
-      assert PhoenixPages.render(ctx.md, "foobar.md", compact_output: true).inner_content == {:safe, "<h1>Hello</h1>"}
+      assert PhoenixPages.render(ctx.md, "foobar.md", markdown: [compact_output: true]).inner_content ==
+               {:safe, "<h1>Hello</h1>"}
     end
 
     test "should render a raw text file", ctx do
@@ -66,67 +67,87 @@ defmodule PhoenixPagesTest do
     end
   end
 
-  test "filename_to_slug/1" do
-    assert PhoenixPages.filename_to_slug("foo.md") == "foo"
-    assert PhoenixPages.filename_to_slug("foo/bar.md") == "bar"
-    assert PhoenixPages.filename_to_slug("/foo/bar.md") == "bar"
-    assert PhoenixPages.filename_to_slug("/foo/bar/baz/qux.md") == "qux"
-    assert PhoenixPages.filename_to_slug(" foo bar.md") == "foo-bar"
-    assert PhoenixPages.filename_to_slug(" foo   bar .md") == "foo-bar"
-    assert PhoenixPages.filename_to_slug("FOO_BAR.md") == "foo-bar"
-    assert PhoenixPages.filename_to_slug("foo__bar.md") == "foo-bar"
-    assert PhoenixPages.filename_to_slug("foo/bar%baz.md") == "bar-baz"
-    assert PhoenixPages.filename_to_slug("foo/bar%123.md") == "bar-123"
+  test "slugify/1" do
+    assert PhoenixPages.slugify("foo.md") == "foo.md"
+    assert PhoenixPages.slugify("foo/bar.md") == "foo/bar.md"
+    assert PhoenixPages.slugify("/foo/bar.md") == "/foo/bar.md"
+    assert PhoenixPages.slugify("/foo/b@r.md") == "/foo/b-r.md"
+    assert PhoenixPages.slugify("/foo/ba@.md") == "/foo/ba-.md"
+    assert PhoenixPages.slugify("/f&o/b@r.md") == "/f-o/b-r.md"
+    assert PhoenixPages.slugify("/f_o/b_r.md") == "/f_o/b_r.md"
+    assert PhoenixPages.slugify("/$oo/b@@.md") == "/-oo/b--.md"
+    assert PhoenixPages.slugify("/foo/b-r.md") == "/foo/b-r.md"
+    assert PhoenixPages.slugify("/foo/b--r.md") == "/foo/b--r.md"
+    assert PhoenixPages.slugify("/foo/-bar-.md") == "/foo/-bar-.md"
+    assert PhoenixPages.slugify("/foo/ bar .md") == "/foo/bar.md"
+    assert PhoenixPages.slugify("/foo /bar.md") == "/foo/bar.md"
+    assert PhoenixPages.slugify("/foo/b  a  r.md") == "/foo/b--a--r.md"
+    assert PhoenixPages.slugify("/  foo  bar .md") == "/foo--bar.md"
+    assert PhoenixPages.slugify("/  foo  /  bar .md") == "/foo/bar.md"
+    assert PhoenixPages.slugify("/FOO_BAR.md") == "/FOO_BAR.md"
+    assert PhoenixPages.slugify("/foo__bar.md") == "/foo__bar.md"
+    assert PhoenixPages.slugify("/foo/bar$$baz.md") == "/foo/bar--baz.md"
+    assert PhoenixPages.slugify("/foo/bar$$##baz.md") == "/foo/bar----baz.md"
+    assert PhoenixPages.slugify("/foo/bar%123.md") == "/foo/bar-123.md"
+    assert PhoenixPages.slugify("/foo.bar/baz.md") == "/foo-bar/baz.md"
+    assert PhoenixPages.slugify("/foo/b@r/baz/") == "/foo/b-r/baz/"
   end
 
-  describe "filename_into_path/3" do
+  describe "into_path/3" do
     test "should put capture groups into page segment" do
-      assert PhoenixPages.filename_into_path(":page", "foo.md", "*.md") == "foo"
-      assert PhoenixPages.filename_into_path("/:page", "foo.md", "*.md") == "/foo"
-      assert PhoenixPages.filename_into_path("/:page", "/foo.md", "*.md") == "/foo"
-      assert PhoenixPages.filename_into_path("/:page/", "foo.md", "*.md") == "/foo/"
-      assert PhoenixPages.filename_into_path("/:page/bar", "foo.md", "*.md") == "/foo/bar"
-      assert PhoenixPages.filename_into_path("/foo:page", "bar.md", "*.md") == "/foobar"
-      assert PhoenixPages.filename_into_path("/:page/:page", "foo.md", "*.md") == "/foo/foo"
-      assert PhoenixPages.filename_into_path("/:page", "foo.md", "**/*.md") == "/foo"
-      assert PhoenixPages.filename_into_path("/:page", "foo/bar.md", "**/*.md") == "/foo/bar"
-      assert PhoenixPages.filename_into_path("/:page", "foo/bar.md", "foo/*.md") == "/bar"
-      assert PhoenixPages.filename_into_path("/:page", "foo/bar.md", "foo/**/*.md") == "/bar"
-      assert PhoenixPages.filename_into_path("/:page", "/foo/bar.md", "foo/**/*.md") == "/bar"
-      assert PhoenixPages.filename_into_path("/:page", "foo/bar/baz.md", "foo/**/*.md") == "/bar/baz"
-      assert PhoenixPages.filename_into_path("/:page", "foo/bar/baz/qux/quux.md", "foo/**/qux/*.md") == "/bar/baz/quux"
-      assert PhoenixPages.filename_into_path("/:page", "/foo/bar/baz/qux/quux.md", "foo/**/qux/*.md") == "/bar/baz/quux"
+      assert PhoenixPages.into_path(":page", "foo.md", "*.md") == "foo"
+      assert PhoenixPages.into_path("/:page", "foo.md", "*.md") == "/foo"
+      assert PhoenixPages.into_path("/:page", "/foo.md", "*.md") == "/foo"
+      assert PhoenixPages.into_path("/:page/", "foo.md", "*.md") == "/foo/"
+      assert PhoenixPages.into_path("/:page/bar", "foo.md", "*.md") == "/foo/bar"
+      assert PhoenixPages.into_path("/foo:page", "bar.md", "*.md") == "/foobar"
+      assert PhoenixPages.into_path("/:page/:page", "foo.md", "*.md") == "/foo/foo"
+      assert PhoenixPages.into_path("/:page", "foo.md", "**/*.md") == "/foo"
+      assert PhoenixPages.into_path("/:page", "foo/bar.md", "**/*.md") == "/foo/bar"
+      assert PhoenixPages.into_path("/:page", "foo/bar.md", "foo/*.md") == "/bar"
+      assert PhoenixPages.into_path("/:page", "foo/bar.md", "foo/**/*.md") == "/bar"
+      assert PhoenixPages.into_path("/:page", "/foo/bar.md", "foo/**/*.md") == "/bar"
+      assert PhoenixPages.into_path("/:page", "foo/bar/baz.md", "foo/**/*.md") == "/bar/baz"
+      assert PhoenixPages.into_path("/:page", "foo/bar/baz/qux/quux.md", "foo/**/qux/*.md") == "/bar/baz/quux"
+      assert PhoenixPages.into_path("/:page", "/foo/bar/baz/qux/quux.md", "foo/**/qux/*.md") == "/bar/baz/quux"
     end
 
     test "should put capture groups into variables" do
-      assert PhoenixPages.filename_into_path("$1", "foo.md", "*.md") == "foo"
-      assert PhoenixPages.filename_into_path("/$1", "foo.md", "*.md") == "/foo"
-      assert PhoenixPages.filename_into_path("/$1/", "foo.md", "*.md") == "/foo/"
-      assert PhoenixPages.filename_into_path("/$1/$1", "foo.md", "*.md") == "/foo/foo"
-      assert PhoenixPages.filename_into_path("/$1", "foo.md", "**.md") == "/foo"
-      assert PhoenixPages.filename_into_path("/foo$1", "bar.md", "**.md") == "/foobar"
-      assert PhoenixPages.filename_into_path("/$1", "foo/bar.md", "**.md") == "/foo/bar"
-      assert PhoenixPages.filename_into_path("/$1", "foo/bar.md", "**/*.md") == "/foo"
-      assert PhoenixPages.filename_into_path("/$1", "foo/bar/baz.md", "**/*.md") == "/foo/bar"
-      assert PhoenixPages.filename_into_path("/$2", "foo/bar/baz.md", "**/*.md") == "/baz"
-      assert PhoenixPages.filename_into_path("/$1/$2", "foo/bar.md", "foo/*.md") == "/bar/$2"
-      assert PhoenixPages.filename_into_path("/$1/$2", "foo/bar/baz/qux.md", "foo/*/baz/*.md") == "/bar/qux"
-      assert PhoenixPages.filename_into_path("/$2/$1", "foo/bar/baz/qux.md", "foo/*/baz/*.md") == "/qux/bar"
-      assert PhoenixPages.filename_into_path("/$1/$2/", "foo/bar/baz/qux.md", "foo/*/baz/*.md") == "/bar/qux/"
-      assert PhoenixPages.filename_into_path("/$1/$2", "foo/bar/baz/qux/quux.md", "foo/**/qux/*.md") == "/bar/baz/quux"
+      assert PhoenixPages.into_path("$1", "foo.md", "*.md") == "foo"
+      assert PhoenixPages.into_path("/$1", "foo.md", "*.md") == "/foo"
+      assert PhoenixPages.into_path("/$1/", "foo.md", "*.md") == "/foo/"
+      assert PhoenixPages.into_path("/$1/$1", "foo.md", "*.md") == "/foo/foo"
+      assert PhoenixPages.into_path("/$1", "foo.md", "**.md") == "/foo"
+      assert PhoenixPages.into_path("/foo$1", "bar.md", "**.md") == "/foobar"
+      assert PhoenixPages.into_path("/$1", "foo/bar.md", "**.md") == "/foo/bar"
+      assert PhoenixPages.into_path("/$1", "foo/bar.md", "**/*.md") == "/foo"
+      assert PhoenixPages.into_path("/$1", "foo/bar/baz.md", "**/*.md") == "/foo/bar"
+      assert PhoenixPages.into_path("/$2", "foo/bar/baz.md", "**/*.md") == "/baz"
+      assert PhoenixPages.into_path("/$1/$2", "foo/bar.md", "foo/*.md") == "/bar/$2"
+      assert PhoenixPages.into_path("/$1/$2", "foo/bar/baz/qux.md", "foo/*/baz/*.md") == "/bar/qux"
+      assert PhoenixPages.into_path("/$2/$1", "foo/bar/baz/qux.md", "foo/*/baz/*.md") == "/qux/bar"
+      assert PhoenixPages.into_path("/$1/$2/", "foo/bar/baz/qux.md", "foo/*/baz/*.md") == "/bar/qux/"
+      assert PhoenixPages.into_path("/$1/$2", "foo/bar/baz/qux/quux.md", "foo/**/qux/*.md") == "/bar/baz/quux"
     end
 
     test "should put capture groups into out-of-order variables" do
-      assert PhoenixPages.filename_into_path("/$2/$1/$3", "foo/bar/baz/qux/quux.md", "**/*/qux/*.md") ==
+      assert PhoenixPages.into_path("/$2/$1/$3", "foo/bar/baz/qux/quux.md", "**/*/qux/*.md") ==
                "/baz/foo/bar/quux"
     end
 
+    test "should put slugify each chunk of the path" do
+      assert PhoenixPages.into_path("/:page", "foo@bar.md", "*.md") == "/foo-bar"
+      assert PhoenixPages.into_path("/:page", "foo bar/baz@qux.md", "*.md") == "/baz-qux"
+      assert PhoenixPages.into_path("/:page", "foo bar/baz@qux.md", "**/*.md") == "/foo-bar/baz-qux"
+      assert PhoenixPages.into_path("/$1/$2", "foo bar/baz@qux.md", "**/*.md") == "/foo-bar/baz-qux"
+    end
+
     test "should put capture groups into page segment and variables" do
-      assert PhoenixPages.filename_into_path("/:page/$2", "foo/bar/baz/qux.md", "foo/*/baz/*.md") == "/bar/qux/qux"
+      assert PhoenixPages.into_path("/:page/$2", "foo/bar/baz/qux.md", "foo/*/baz/*.md") == "/bar/qux/qux"
     end
 
     test "should raise error if filename does not match pattern" do
-      assert_raise ArgumentError, fn -> PhoenixPages.filename_into_path("/:page", "foo/bar.md", "baz/*.md") end
+      assert_raise ArgumentError, fn -> PhoenixPages.into_path("/:page", "foo/bar.md", "baz/*.md") end
     end
   end
 

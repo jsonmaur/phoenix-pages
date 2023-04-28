@@ -1,17 +1,19 @@
 defmodule PhoenixPages do
-  @moduledoc false
+  @moduledoc """
+  Blogs, docs, and static pages in Phoenix.
+  Check out the [README](readme.html) to get started.
+  """
 
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
       otp_app = Keyword.fetch!(opts, :otp_app)
-      from = Keyword.get(opts, :from, "priv/pages")
-      markdown = Keyword.get(opts, :markdown, [])
+      render_opts = Keyword.get(opts, :render_options, [])
 
       import PhoenixPages, only: [pages: 3]
 
       @before_compile PhoenixPages
-      @phoenix_pages_from Application.app_dir(otp_app, from)
-      @phoenix_pages_markdown markdown
+      @phoenix_pages_app_dir Application.app_dir(otp_app)
+      @phoenix_pages_render_opts render_opts
 
       Module.register_attribute(__MODULE__, :phoenix_pages, accumulate: true)
     end
@@ -22,7 +24,7 @@ defmodule PhoenixPages do
     quote do
       def __mix_recompile__? do
         Enum.any?(@phoenix_pages, fn {from, hash} ->
-          PhoenixPages.list_files(@phoenix_pages_from, from) |> elem(1) != hash
+          PhoenixPages.list_files(@phoenix_pages_app_dir, from) |> elem(1) != hash
         end)
       end
     end
@@ -32,12 +34,13 @@ defmodule PhoenixPages do
   """
   defmacro pages(path, plug, opts) do
     quote bind_quoted: [path: path, plug: plug, opts: opts] do
-      {from, opts} = Keyword.pop(opts, :from, "**/*.md")
-      {attrs, opts} = Keyword.pop(opts, :attrs, [])
-      {{sort_key, sort_dir}, opts} = Keyword.pop(opts, :sort, {:slug, :asc})
+      {render_opts, opts} = Keyword.pop(opts, :render_options, @phoenix_pages_render_opts)
+      {from, opts} = Keyword.pop(opts, :from, "priv/pages/**/*.md")
+      {{sort_key, sort_dir}, opts} = Keyword.pop(opts, :sort, {:path, :asc})
       {index_path, opts} = Keyword.pop(opts, :index_path)
+      {attrs, opts} = Keyword.pop(opts, :attrs, [])
       {assigns, opts} = Keyword.pop(opts, :assigns, %{})
-      {files, hash} = PhoenixPages.list_files(@phoenix_pages_from, from)
+      {files, hash} = PhoenixPages.list_files(@phoenix_pages_app_dir, from)
 
       @phoenix_pages {from, hash}
 
@@ -45,18 +48,17 @@ defmodule PhoenixPages do
         for file <- files do
           @external_resource file
 
-          path = PhoenixPages.filename_into_path(path, file, from)
-          slug = PhoenixPages.filename_to_slug(file)
-          filename = Path.relative_to(file, @phoenix_pages_from)
+          path = PhoenixPages.into_path(path, file, from)
+          filename = Path.relative_to(file, @phoenix_pages_app_dir)
 
           data =
             file
             |> File.read!()
             |> PhoenixPages.parse_frontmatter(filename)
             |> PhoenixPages.cast_data(attrs)
-            |> PhoenixPages.render(filename, @phoenix_pages_markdown)
+            |> PhoenixPages.render(filename, render_opts)
 
-          Map.merge(%{path: path, slug: slug, filename: filename}, data)
+          Map.merge(%{path: path, filename: filename}, data)
         end
         |> Enum.sort_by(&Map.get(&1, sort_key), sort_dir)
 
@@ -88,11 +90,13 @@ defmodule PhoenixPages do
 
   @doc false
   def render(data, filename, opts) do
+    markdown_opts = Keyword.get(opts, :markdown, [])
+
     case Path.extname(filename) do
       ext when ext in [".md", ".markdown"] ->
-        escape_html = Keyword.get(opts, :escape_html, false)
-        smartypants = Keyword.get(opts, :smartypants, true)
-        compact_output = Keyword.get(opts, :compact_output, false)
+        escape_html = Keyword.get(markdown_opts, :escape_html, false)
+        smartypants = Keyword.get(markdown_opts, :smartypants, true)
+        compact_output = Keyword.get(markdown_opts, :compact_output, false)
 
         earmark_opts = %Earmark.Options{
           file: filename,
@@ -115,14 +119,14 @@ defmodule PhoenixPages do
 
   @doc false
   def parse_frontmatter(content, filename \\ nil) do
-    with [frontmatter, content] <- String.split(content, ~r/\n---\n/, parts: 2),
-         {:ok, %{} = data} <- String.trim(frontmatter, "---") |> YamlElixir.read_from_string() do
+    with [fm, body] <- String.split(content, ~r/\n---\n/, parts: 2),
+         {:ok, %{} = data} <- String.trim(fm, "---") |> YamlElixir.read_from_string() do
       data
       |> Enum.into(%{}, fn {k, v} -> {String.to_existing_atom(k), v} end)
-      |> Map.put(:content, content)
+      |> Map.put(:content, body)
     else
-      [content] ->
-        %{content: content}
+      [body] ->
+        %{content: body}
 
       {:error, %YamlElixir.ParsingError{} = error} ->
         raise PhoenixPages.ParseError, %{filename: filename, line: error.line, column: error.column}
@@ -133,18 +137,24 @@ defmodule PhoenixPages do
   end
 
   @doc false
-  def filename_to_slug(filename) do
+  def slugify(filename) do
+    ext = Path.extname(filename)
+
     filename
-    |> Path.basename()
     |> Path.rootname()
-    |> String.trim()
-    |> String.downcase()
-    |> String.replace(~r/[^a-zA-Z0-9-]+/, "-")
+    |> String.split("/")
+    |> Enum.map(&String.trim(&1))
+    |> Enum.map(&String.replace(&1, ~r/[^a-zA-Z0-9-_]/, "-"))
+    |> Enum.join("/")
+    |> Kernel.<>(ext)
   end
 
   @doc false
-  def filename_into_path(path, filename, pattern) do
-    case wildcard_to_regex(pattern) |> Regex.run(filename) do
+  def into_path(path, filename, pattern) do
+    regex = wildcard_to_regex(pattern)
+    slug = slugify(filename)
+
+    case Regex.run(regex, slug) do
       nil ->
         raise ArgumentError, """
         Filename \"#{filename}\" does not match pattern \"#{pattern}\".
