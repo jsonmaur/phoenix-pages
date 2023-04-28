@@ -93,7 +93,7 @@ defmodule PhoenixPages do
     case Path.extname(filename) do
       ext when ext in [".md", ".markdown"] ->
         markdown_opts = Keyword.get(opts, :markdown, [])
-        inner_content = Markdown.render(data.raw_content, filename, markdown_opts)
+        inner_content = PhoenixPages.Markdown.render(data.raw_content, filename, markdown_opts)
 
         Map.put(data, :inner_content, inner_content)
 

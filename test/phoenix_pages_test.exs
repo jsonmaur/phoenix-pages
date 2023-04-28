@@ -32,6 +32,5 @@ defmodule PhoenixPagesTest do
       assert PhoenixPages.render(ctx.txt, "foobar.txt", []).raw_content == "Hello"
       refute PhoenixPages.render(ctx.txt, "foobar.txt", [])[:inner_content]
     end
-
   end
 end
