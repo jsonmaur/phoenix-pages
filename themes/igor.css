@@ -1,0 +1,43 @@
+.highlight .hll {background-color: #ffffcc}
+.highlight {background-color: #ffffff}.highlight .unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.highlight .c {color: #FF0000; font-style: italic; } /* :comment */
+.highlight .c1 {color: #FF0000; font-style: italic; } /* :comment_single */
+.highlight .ch {color: #FF0000; font-style: italic; } /* :comment_hashbang */
+.highlight .cm {color: #FF0000; font-style: italic; } /* :comment_multiline */
+.highlight .cp {color: #FF0000; font-style: italic; } /* :comment_preproc */
+.highlight .cpf {color: #FF0000; font-style: italic; } /* :comment_preproc_file */
+.highlight .cs {color: #FF0000; font-style: italic; } /* :comment_special */
+.highlight .dl {color: #009C00; } /* :string_delimiter */
+.highlight .fm {color: #C34E00; } /* :name_function_magic */
+.highlight .k {color: #0000FF; } /* :keyword */
+.highlight .kc {color: #0000FF; } /* :keyword_constant */
+.highlight .kd {color: #0000FF; } /* :keyword_declaration */
+.highlight .kn {color: #0000FF; } /* :keyword_namespace */
+.highlight .kp {color: #0000FF; } /* :keyword_pseudo */
+.highlight .kr {color: #0000FF; } /* :keyword_reserved */
+.highlight .kt {color: #0000FF; } /* :keyword_type */
+.highlight .nc {color: #007575; } /* :name_class */
+.highlight .nd {color: #CC00A3; } /* :name_decorator */
+.highlight .nf {color: #C34E00; } /* :name_function */
+.highlight .s {color: #009C00; } /* :string */
+.highlight .s1 {color: #009C00; } /* :string_single */
+.highlight .s2 {color: #009C00; } /* :string_double */
+.highlight .sa {color: #009C00; } /* :string_affix */
+.highlight .sb {color: #009C00; } /* :string_backtick */
+.highlight .sc {color: #009C00; } /* :string_char */
+.highlight .sd {color: #009C00; } /* :string_doc */
+.highlight .se {color: #009C00; } /* :string_escape */
+.highlight .sh {color: #009C00; } /* :string_heredoc */
+.highlight .si {color: #009C00; } /* :string_interpol */
+.highlight .sr {color: #009C00; } /* :string_regex */
+.highlight .ss {color: #009C00; } /* :string_symbol */
+.highlight .sx {color: #009C00; } /* :string_other */
+.highlight .sx {color: #009C00; } /* :string_sigil */

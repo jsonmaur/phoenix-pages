@@ -18,7 +18,8 @@ defmodule PhoenixPages.MixProject do
       authors: ["Jason Maurer"],
       package: [
         licenses: ["MIT"],
-        links: %{"GitHub" => @url}
+        links: %{"GitHub" => @url},
+        files: ~w(lib themes .formatter.exs CHANGELOG.md LICENSE mix.exs README.md)
       ],
       docs: [
         main: "readme",

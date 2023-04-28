@@ -1,0 +1,47 @@
+.highlight .hll {background-color: #ffffcc}
+.highlight {background-color: #ffffff}.highlight .unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.highlight .c {color: #008000; } /* :comment */
+.highlight .c1 {color: #008000; } /* :comment_single */
+.highlight .ch {color: #008000; } /* :comment_hashbang */
+.highlight .cm {color: #008000; } /* :comment_multiline */
+.highlight .cp {color: #0000ff; } /* :comment_preproc */
+.highlight .cpf {color: #0000ff; } /* :comment_preproc_file */
+.highlight .cs {color: #008000; } /* :comment_special */
+.highlight .dl {color: #a31515; } /* :string_delimiter */
+.highlight .err {border: #FF0000; } /* :error */
+.highlight .ge {font-style: italic; } /* :generic_emph */
+.highlight .gh {font-weight: bold; } /* :generic_heading */
+.highlight .gp {font-weight: bold; } /* :generic_prompt */
+.highlight .gs {font-weight: bold; } /* :generic_strong */
+.highlight .gu {font-weight: bold; } /* :generic_subheading */
+.highlight .k {color: #0000ff; } /* :keyword */
+.highlight .kc {color: #0000ff; } /* :keyword_constant */
+.highlight .kd {color: #0000ff; } /* :keyword_declaration */
+.highlight .kn {color: #0000ff; } /* :keyword_namespace */
+.highlight .kp {color: #0000ff; } /* :keyword_pseudo */
+.highlight .kr {color: #0000ff; } /* :keyword_reserved */
+.highlight .kt {color: #2b91af; } /* :keyword_type */
+.highlight .nc {color: #2b91af; } /* :name_class */
+.highlight .ow {color: #0000ff; } /* :operator_word */
+.highlight .s {color: #a31515; } /* :string */
+.highlight .s1 {color: #a31515; } /* :string_single */
+.highlight .s2 {color: #a31515; } /* :string_double */
+.highlight .sa {color: #a31515; } /* :string_affix */
+.highlight .sb {color: #a31515; } /* :string_backtick */
+.highlight .sc {color: #a31515; } /* :string_char */
+.highlight .sd {color: #a31515; } /* :string_doc */
+.highlight .se {color: #a31515; } /* :string_escape */
+.highlight .sh {color: #a31515; } /* :string_heredoc */
+.highlight .si {color: #a31515; } /* :string_interpol */
+.highlight .sr {color: #a31515; } /* :string_regex */
+.highlight .ss {color: #a31515; } /* :string_symbol */
+.highlight .sx {color: #a31515; } /* :string_other */
+.highlight .sx {color: #a31515; } /* :string_sigil */

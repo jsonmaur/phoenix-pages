@@ -1,0 +1,51 @@
+.highlight .hll {background-color: #ffffcc}
+.highlight {background-color: #ffffff}.highlight .unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.highlight .c {font-style: italic; } /* :comment */
+.highlight .c1 {font-style: italic; } /* :comment_single */
+.highlight .ch {font-style: italic; } /* :comment_hashbang */
+.highlight .cm {font-style: italic; } /* :comment_multiline */
+.highlight .cp {font-style: normal; } /* :comment_preproc */
+.highlight .cpf {font-style: normal; } /* :comment_preproc_file */
+.highlight .cs {font-style: italic; } /* :comment_special */
+.highlight .dl {font-style: italic; } /* :string_delimiter */
+.highlight .err {border: #FF0000; } /* :error */
+.highlight .ge {font-style: italic; } /* :generic_emph */
+.highlight .gh {font-weight: bold; } /* :generic_heading */
+.highlight .gp {font-weight: bold; } /* :generic_prompt */
+.highlight .gs {font-weight: bold; } /* :generic_strong */
+.highlight .gu {font-weight: bold; } /* :generic_subheading */
+.highlight .k {font-weight: bold; } /* :keyword */
+.highlight .kc {font-weight: bold; } /* :keyword_constant */
+.highlight .kd {font-weight: bold; } /* :keyword_declaration */
+.highlight .kn {font-weight: bold; } /* :keyword_namespace */
+.highlight .kp {font-weight: normal; } /* :keyword_pseudo */
+.highlight .kr {font-weight: bold; } /* :keyword_reserved */
+.highlight .kt {font-weight: normal; } /* :keyword_type */
+.highlight .nc {font-weight: bold; } /* :name_class */
+.highlight .ne {font-weight: bold; } /* :name_exception */
+.highlight .ni {font-weight: bold; } /* :name_entity */
+.highlight .nn {font-weight: bold; } /* :name_namespace */
+.highlight .nt {font-weight: bold; } /* :name_tag */
+.highlight .ow {font-weight: bold; } /* :operator_word */
+.highlight .s {font-style: italic; } /* :string */
+.highlight .s1 {font-style: italic; } /* :string_single */
+.highlight .s2 {font-style: italic; } /* :string_double */
+.highlight .sa {font-style: italic; } /* :string_affix */
+.highlight .sb {font-style: italic; } /* :string_backtick */
+.highlight .sc {font-style: italic; } /* :string_char */
+.highlight .sd {font-style: italic; } /* :string_doc */
+.highlight .se {font-style: italic; font-weight: bold; } /* :string_escape */
+.highlight .sh {font-style: italic; } /* :string_heredoc */
+.highlight .si {font-style: italic; font-weight: bold; } /* :string_interpol */
+.highlight .sr {font-style: italic; } /* :string_regex */
+.highlight .ss {font-style: italic; } /* :string_symbol */
+.highlight .sx {font-style: italic; } /* :string_other */
+.highlight .sx {font-style: italic; } /* :string_sigil */

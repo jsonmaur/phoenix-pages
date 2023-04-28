@@ -1,0 +1,74 @@
+.highlight .hll {background-color: #404040}
+.highlight {background-color: #202020}.highlight .unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.highlight .bp {color: #24909d; } /* :name_builtin_pseudo */
+.highlight .c {color: #999999; font-style: italic; } /* :comment */
+.highlight .c1 {color: #999999; font-style: italic; } /* :comment_single */
+.highlight .ch {color: #999999; font-style: italic; } /* :comment_hashbang */
+.highlight .cm {color: #999999; font-style: italic; } /* :comment_multiline */
+.highlight .cp {color: #cd2828; font-style: normal; font-weight: bold; } /* :comment_preproc */
+.highlight .cpf {color: #cd2828; font-style: normal; font-weight: bold; } /* :comment_preproc_file */
+.highlight .cs {color: #e50808; font-style: normal; font-weight: bold; background-color: #520000; } /* :comment_special */
+.highlight .dl {color: #ed9d13; } /* :string_delimiter */
+.highlight .err {color: #a61717; background-color: #e3d2d2; } /* :error */
+.highlight .fm {color: #447fcf; } /* :name_function_magic */
+.highlight .gd {color: #d22323; } /* :generic_deleted */
+.highlight .ge {font-style: italic; } /* :generic_emph */
+.highlight .gh {color: #ffffff; font-weight: bold; } /* :generic_heading */
+.highlight .gi {color: #589819; } /* :generic_inserted */
+.highlight .go {color: #cccccc; } /* :generic_output */
+.highlight .gp {color: #aaaaaa; } /* :generic_prompt */
+.highlight .gr {color: #d22323; } /* :generic_error */
+.highlight .gs {font-weight: bold; } /* :generic_strong */
+.highlight .gt {color: #d22323; } /* :generic_traceback */
+.highlight .gu {color: #ffffff; text-decoration: underline; } /* :generic_subheading */
+.highlight .il {color: #3677a9; } /* :number_integer_long */
+.highlight .k {color: #6ab825; font-weight: bold; } /* :keyword */
+.highlight .kc {color: #6ab825; font-weight: bold; } /* :keyword_constant */
+.highlight .kd {color: #6ab825; font-weight: bold; } /* :keyword_declaration */
+.highlight .kn {color: #6ab825; font-weight: bold; } /* :keyword_namespace */
+.highlight .kp {color: #6ab825; font-weight: normal; } /* :keyword_pseudo */
+.highlight .kr {color: #6ab825; font-weight: bold; } /* :keyword_reserved */
+.highlight .kt {color: #6ab825; font-weight: bold; } /* :keyword_type */
+.highlight .m {color: #3677a9; } /* :number */
+.highlight .mb {color: #3677a9; } /* :number_bin */
+.highlight .mf {color: #3677a9; } /* :number_float */
+.highlight .mh {color: #3677a9; } /* :number_hex */
+.highlight .mi {color: #3677a9; } /* :number_integer */
+.highlight .mo {color: #3677a9; } /* :number_oct */
+.highlight .na {color: #bbbbbb; } /* :name_attribute */
+.highlight .nb {color: #24909d; } /* :name_builtin */
+.highlight .nc {color: #447fcf; text-decoration: underline; } /* :name_class */
+.highlight .nd {color: #ffa500; } /* :name_decorator */
+.highlight .ne {color: #bbbbbb; } /* :name_exception */
+.highlight .nf {color: #447fcf; } /* :name_function */
+.highlight .nn {color: #447fcf; text-decoration: underline; } /* :name_namespace */
+.highlight .no {color: #40ffff; } /* :name_constant */
+.highlight .nt {color: #6ab825; font-weight: bold; } /* :name_tag */
+.highlight .nv {color: #40ffff; } /* :name_variable */
+.highlight .ow {color: #6ab825; font-weight: bold; } /* :operator_word */
+.highlight .s {color: #ed9d13; } /* :string */
+.highlight .s1 {color: #ed9d13; } /* :string_single */
+.highlight .s2 {color: #ed9d13; } /* :string_double */
+.highlight .sa {color: #ed9d13; } /* :string_affix */
+.highlight .sb {color: #ed9d13; } /* :string_backtick */
+.highlight .sc {color: #ed9d13; } /* :string_char */
+.highlight .sd {color: #ed9d13; } /* :string_doc */
+.highlight .se {color: #ed9d13; } /* :string_escape */
+.highlight .sh {color: #ed9d13; } /* :string_heredoc */
+.highlight .si {color: #ed9d13; } /* :string_interpol */
+.highlight .sr {color: #ed9d13; } /* :string_regex */
+.highlight .ss {color: #ed9d13; } /* :string_symbol */
+.highlight .sx {color: #ed9d13; } /* :string_sigil */
+.highlight .sx {color: #ffa500; } /* :string_other */
+.highlight .vc {color: #40ffff; } /* :name_variable_class */
+.highlight .vg {color: #40ffff; } /* :name_variable_global */
+.highlight .vi {color: #40ffff; } /* :name_variable_instance */
+.highlight .vm {color: #40ffff; } /* :name_variable_magic */
