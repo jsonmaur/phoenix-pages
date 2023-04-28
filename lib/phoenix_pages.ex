@@ -90,25 +90,10 @@ defmodule PhoenixPages do
 
   @doc false
   def render(data, filename, opts) do
-    markdown_opts = Keyword.get(opts, :markdown, [])
-
     case Path.extname(filename) do
       ext when ext in [".md", ".markdown"] ->
-        escape_html = Keyword.get(markdown_opts, :escape_html, false)
-        smartypants = Keyword.get(markdown_opts, :smartypants, true)
-        compact_output = Keyword.get(markdown_opts, :compact_output, false)
-
-        earmark_opts = %Earmark.Options{
-          file: filename,
-          escape: escape_html,
-          smartypants: smartypants,
-          compact_output: compact_output
-        }
-
-        inner_content =
-          data.content
-          |> Earmark.as_html!(earmark_opts)
-          |> Phoenix.HTML.raw()
+        markdown_opts = Keyword.get(opts, :markdown, [])
+        inner_content = render_markdown(data.raw_content, markdown_opts)
 
         Map.put(data, :inner_content, inner_content)
 
@@ -117,16 +102,32 @@ defmodule PhoenixPages do
     end
   end
 
+  defp render_markdown(contents, opts) do
+    escape_html = Keyword.get(opts, :escape_html, false)
+    smartypants = Keyword.get(opts, :smartypants, true)
+    compact_output = Keyword.get(opts, :compact_output, false)
+
+    earmark_opts = %Earmark.Options{
+      escape: escape_html,
+      smartypants: smartypants,
+      compact_output: compact_output
+    }
+
+    contents
+    |> Earmark.as_html!(earmark_opts)
+    |> Phoenix.HTML.raw()
+  end
+
   @doc false
-  def parse_frontmatter(content, filename \\ nil) do
-    with [fm, body] <- String.split(content, ~r/\n---\n/, parts: 2),
+  def parse_frontmatter(contents, filename \\ nil) do
+    with [fm, body] <- String.split(contents, ~r/\n---\n/, parts: 2),
          {:ok, %{} = data} <- String.trim(fm, "---") |> YamlElixir.read_from_string() do
       data
       |> Enum.into(%{}, fn {k, v} -> {String.to_existing_atom(k), v} end)
-      |> Map.put(:content, body)
+      |> Map.put(:raw_content, body)
     else
       [body] ->
-        %{content: body}
+        %{raw_content: body}
 
       {:error, %YamlElixir.ParsingError{} = error} ->
         raise PhoenixPages.ParseError, %{filename: filename, line: error.line, column: error.column}
@@ -201,7 +202,7 @@ defmodule PhoenixPages do
 
   @doc false
   def cast_data(data, attrs) when is_list(attrs) do
-    attrs = [:content | attrs]
+    attrs = [:raw_content | attrs]
 
     Enum.into(attrs, %{}, fn v ->
       case v do

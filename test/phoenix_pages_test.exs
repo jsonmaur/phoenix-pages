@@ -13,8 +13,8 @@ defmodule PhoenixPagesTest do
   describe "render/3" do
     setup do
       %{
-        md: %{content: "# Hello"},
-        txt: %{content: "Hello"}
+        md: %{raw_content: "# Hello"},
+        txt: %{raw_content: "Hello"}
       }
     end
 
@@ -29,29 +29,29 @@ defmodule PhoenixPagesTest do
     end
 
     test "should render a raw text file", ctx do
-      assert PhoenixPages.render(ctx.txt, "foobar.txt", []).content == "Hello"
+      assert PhoenixPages.render(ctx.txt, "foobar.txt", []).raw_content == "Hello"
       refute PhoenixPages.render(ctx.txt, "foobar.txt", [])[:inner_content]
     end
   end
 
   describe "parse_frontmatter/1" do
     test "should parse valid frontmatter" do
-      assert PhoenixPages.parse_frontmatter("---\nfoo: bar\n---\nHello") == %{foo: "bar", content: "Hello"}
+      assert PhoenixPages.parse_frontmatter("---\nfoo: bar\n---\nHello") == %{foo: "bar", raw_content: "Hello"}
 
       assert PhoenixPages.parse_frontmatter("---\nfoo: bar\nbaz: [qux, quux]\n---\nHello") == %{
                foo: "bar",
                baz: ["qux", "quux"],
-               content: "Hello"
+               raw_content: "Hello"
              }
     end
 
     test "should ignore misformed frontmatter" do
-      assert PhoenixPages.parse_frontmatter("---\nfoo: bar\n--\nHello") == %{content: "---\nfoo: bar\n--\nHello"}
+      assert PhoenixPages.parse_frontmatter("---\nfoo: bar\n--\nHello") == %{raw_content: "---\nfoo: bar\n--\nHello"}
     end
 
     test "should ignore empty frontmatter" do
-      assert PhoenixPages.parse_frontmatter("---\n---\nHello") == %{content: "Hello"}
-      assert PhoenixPages.parse_frontmatter("Hello") == %{content: "Hello"}
+      assert PhoenixPages.parse_frontmatter("---\n---\nHello") == %{raw_content: "Hello"}
+      assert PhoenixPages.parse_frontmatter("Hello") == %{raw_content: "Hello"}
     end
 
     test "should raise error with invalid frontmatter" do
@@ -174,23 +174,26 @@ defmodule PhoenixPagesTest do
 
   describe "cast_data/2" do
     test "should cast a list of required fields" do
-      assert PhoenixPages.cast_data(%{content: "", foo: "bar"}, [:foo]) == %{content: "", foo: "bar"}
-      assert PhoenixPages.cast_data(%{content: "", foo: ["bar"]}, [:foo]) == %{content: "", foo: ["bar"]}
+      assert PhoenixPages.cast_data(%{raw_content: "", foo: "bar"}, [:foo]) == %{raw_content: "", foo: "bar"}
+      assert PhoenixPages.cast_data(%{raw_content: "", foo: ["bar"]}, [:foo]) == %{raw_content: "", foo: ["bar"]}
     end
 
     test "should raise error if a required field is missing" do
-      assert_raise KeyError, fn -> PhoenixPages.cast_data(%{content: ""}, [:foo]) end
+      assert_raise KeyError, fn -> PhoenixPages.cast_data(%{raw_content: ""}, [:foo]) end
     end
 
     test "should ignore non-cast fields" do
-      assert PhoenixPages.cast_data(%{content: "", foo: "bar", baz: "qux"}, [:foo]) == %{content: "", foo: "bar"}
+      assert PhoenixPages.cast_data(%{raw_content: "", foo: "bar", baz: "qux"}, [:foo]) == %{
+               raw_content: "",
+               foo: "bar"
+             }
     end
 
     test "should add field defaults" do
-      assert PhoenixPages.cast_data(%{content: ""}, foo: "bar") == %{content: "", foo: "bar"}
+      assert PhoenixPages.cast_data(%{raw_content: ""}, foo: "bar") == %{raw_content: "", foo: "bar"}
 
-      assert PhoenixPages.cast_data(%{content: "", foo: "bar", baz: "baz"}, [:foo, baz: "qux"]) == %{
-               content: "",
+      assert PhoenixPages.cast_data(%{raw_content: "", foo: "bar", baz: "baz"}, [:foo, baz: "qux"]) == %{
+               raw_content: "",
                foo: "bar",
                baz: "baz"
              }
