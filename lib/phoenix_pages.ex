@@ -48,14 +48,14 @@ defmodule PhoenixPages do
         for file <- files do
           @external_resource file
 
-          path = PhoenixPages.into_path(path, file, from)
+          path = PhoenixPages.Helpers.into_path(path, file, from)
           filename = Path.relative_to(file, @phoenix_pages_app_dir)
 
           data =
             file
             |> File.read!()
-            |> PhoenixPages.parse_frontmatter(filename)
-            |> PhoenixPages.cast_data(attrs)
+            |> PhoenixPages.Frontmatter.parse(filename)
+            |> PhoenixPages.Frontmatter.cast(attrs)
             |> PhoenixPages.render(filename, render_opts)
 
           Map.merge(%{path: path, filename: filename}, data)
@@ -93,122 +93,12 @@ defmodule PhoenixPages do
     case Path.extname(filename) do
       ext when ext in [".md", ".markdown"] ->
         markdown_opts = Keyword.get(opts, :markdown, [])
-        inner_content = render_markdown(data.raw_content, markdown_opts)
+        inner_content = Markdown.render(data.raw_content, filename, markdown_opts)
 
         Map.put(data, :inner_content, inner_content)
 
       _ ->
         data
     end
-  end
-
-  defp render_markdown(contents, opts) do
-    escape_html = Keyword.get(opts, :escape_html, false)
-    smartypants = Keyword.get(opts, :smartypants, true)
-    compact_output = Keyword.get(opts, :compact_output, false)
-
-    earmark_opts = %Earmark.Options{
-      escape: escape_html,
-      smartypants: smartypants,
-      compact_output: compact_output
-    }
-
-    contents
-    |> Earmark.as_html!(earmark_opts)
-    |> Phoenix.HTML.raw()
-  end
-
-  @doc false
-  def parse_frontmatter(contents, filename \\ nil) do
-    with [fm, body] <- String.split(contents, ~r/\n---\n/, parts: 2),
-         {:ok, %{} = data} <- String.trim(fm, "---") |> YamlElixir.read_from_string() do
-      data
-      |> Enum.into(%{}, fn {k, v} -> {String.to_existing_atom(k), v} end)
-      |> Map.put(:raw_content, body)
-    else
-      [body] ->
-        %{raw_content: body}
-
-      {:error, %YamlElixir.ParsingError{} = error} ->
-        raise PhoenixPages.ParseError, %{filename: filename, line: error.line, column: error.column}
-
-      _ ->
-        raise PhoenixPages.ParseError, %{filename: filename}
-    end
-  end
-
-  @doc false
-  def slugify(filename) do
-    ext = Path.extname(filename)
-
-    filename
-    |> Path.rootname()
-    |> String.split("/")
-    |> Enum.map(&String.trim(&1))
-    |> Enum.map(&String.replace(&1, ~r/[^a-zA-Z0-9-_]/, "-"))
-    |> Enum.join("/")
-    |> Kernel.<>(ext)
-  end
-
-  @doc false
-  def into_path(path, filename, pattern) do
-    regex = wildcard_to_regex(pattern)
-    slug = slugify(filename)
-
-    case Regex.run(regex, slug) do
-      nil ->
-        raise ArgumentError, """
-        Filename \"#{filename}\" does not match pattern \"#{pattern}\".
-        Please open an issue for this: https://github.com/jsonmaur/phoenix-pages/issues
-        """
-
-      captures ->
-        captures =
-          captures
-          |> Enum.with_index()
-          |> Enum.map(fn {v, i} -> {"$#{i}", v} end)
-          |> Enum.into(%{})
-
-        page =
-          captures
-          |> Map.delete("$0")
-          |> Map.values()
-          |> Enum.filter(&(&1 != ""))
-          |> Enum.map_join("/", &String.trim(&1, "/"))
-
-        path
-        |> String.replace(":page", page)
-        |> String.replace(Map.keys(captures), &Map.get(captures, &1))
-    end
-  end
-
-  @doc false
-  def wildcard_to_regex(pattern) do
-    pattern
-    |> Regex.escape()
-    |> String.replace("\\?", ".")
-    |> String.replace("\\[", "[")
-    |> String.replace("\\]", "]")
-    |> String.replace("\\{", "(?:")
-    |> String.replace("\\}", ")")
-    |> String.replace("\\*\\*/", "(.*?)\/?")
-    |> String.replace("\\*\\*", "(.*?)\/?")
-    |> String.replace("\\*", "([^./]*)")
-    |> String.replace(~r/\(\?\:(.*?)\)/, &String.replace(&1, ",", "|"))
-    |> String.replace(~r/\[(.*?)\]/, &String.replace(&1, "\\-", "-"))
-    |> Kernel.<>("$")
-    |> Regex.compile!()
-  end
-
-  @doc false
-  def cast_data(data, attrs) when is_list(attrs) do
-    attrs = [:raw_content | attrs]
-
-    Enum.into(attrs, %{}, fn v ->
-      case v do
-        {attr, default} -> {attr, Map.get(data, attr, default)}
-        attr -> {attr, Map.fetch!(data, attr)}
-      end
-    end)
   end
 end

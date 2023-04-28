@@ -1,4 +1,4 @@
-defmodule PhoenixPages.ParseError do
+defmodule PhoenixPages.Error do
   @moduledoc false
 
   defexception [:message]
