@@ -29,7 +29,7 @@ defmodule PhoenixPages.Highlight do
   defp process_ast("inline", ast), do: ast
 
   defp process_ast(lang, ast) do
-    case lexer(lang) do
+    case get_lexer(lang) do
       nil ->
         ast
 
@@ -44,17 +44,17 @@ defmodule PhoenixPages.Highlight do
     end
   end
 
-  defp lexer(lang) do
-    if lexer_module(lang) |> Code.ensure_loaded?() do
+  defp get_lexer(lang) do
+    if lexer(lang) |> Code.ensure_loaded?() do
       Makeup.Registry.get_lexer_by_name(lang)
     end
   end
 
-  defp lexer_module("html"), do: Makeup.Lexers.HTMLLexer
-  defp lexer_module("eex"), do: Makeup.Lexers.EExLexer
-  defp lexer_module("heex"), do: Makeup.Lexers.HEExLexer
+  defp lexer("html"), do: Makeup.Lexers.HTMLLexer
+  defp lexer("eex"), do: Makeup.Lexers.EExLexer
+  defp lexer("heex"), do: Makeup.Lexers.HEExLexer
 
-  defp lexer_module(name) do
+  defp lexer(name) do
     "Elixir/Makeup/Lexers/#{name}_lexer"
     |> Macro.camelize()
     |> String.to_atom()
