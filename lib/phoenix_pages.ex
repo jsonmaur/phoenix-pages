@@ -51,7 +51,7 @@ defmodule PhoenixPages do
     quote bind_quoted: [path: path, plug: plug, opts: opts] do
       {id, opts} = Keyword.pop(opts, :id)
       {from, opts} = Keyword.pop(opts, :from, "priv/pages/**/*.md")
-      {index_path, opts} = Keyword.pop(opts, :index_path)
+      {sort, opts} = Keyword.pop(opts, :sort)
       {attrs, opts} = Keyword.pop(opts, :attrs, [])
       {render_opts, opts} = Keyword.pop(opts, :render_options, @phoenix_pages_render_opts)
       {files, hash} = PhoenixPages.Helpers.list_files(@phoenix_pages_app_dir, from)
@@ -79,16 +79,12 @@ defmodule PhoenixPages do
           )
         end
 
-      if index_path do
-        Phoenix.Router.get(index_path, plug, :index, opts)
-      end
-
       for page <- pages do
         opts = Keyword.put(opts, :assigns, page.assigns)
         Phoenix.Router.get(page.path, plug, :show, opts)
       end
 
-      @phoenix_pages pages
+      @phoenix_pages PhoenixPages.sort_pages(pages, sort)
       @phoenix_pages_from {from, hash}
 
       if id do
@@ -105,6 +101,13 @@ defmodule PhoenixPages do
       end
     end
   end
+
+  @doc false
+  def sort_pages(pages, {sort_by, sort_dir}) do
+    Enum.sort_by(pages, &Map.get(&1.assigns, sort_by), sort_dir)
+  end
+
+  def sort_pages(pages, _), do: pages
 
   @doc false
   def render(content, filename, opts) do

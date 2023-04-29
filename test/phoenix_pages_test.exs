@@ -30,13 +30,6 @@ defmodule PhoenixPagesTest do
     assert conn.assigns.inner_content == {:safe, "<h1>\nHello There...</h1>\n"}
   end
 
-  test "GET /blog", ctx do
-    conn = get(ctx.conn, "/blog")
-
-    assert response(conn, 200)
-    assert conn.assigns.foo == "bar"
-  end
-
   test "GET /blog/post1", ctx do
     conn = get(ctx.conn, "/blog/post1")
 
@@ -62,7 +55,7 @@ defmodule PhoenixPagesTest do
 
   describe "get_pages/1" do
     test "should return list of pages" do
-      assert {:ok, [post1, post2]} = Router.get_pages(:blog)
+      assert {:ok, [post2, post1]} = Router.get_pages(:blog)
 
       assert post1.path == "/blog/post1"
       assert post1.filename == "priv/blog/post1.md"
@@ -84,7 +77,7 @@ defmodule PhoenixPagesTest do
 
   describe "get_pages!/1" do
     test "should return list of pages" do
-      assert [post1, post2] = Router.get_pages!(:blog)
+      assert [post2, post1] = Router.get_pages!(:blog)
       assert post1.path == "/blog/post1"
       assert post2.path == "/blog/post2"
     end

@@ -12,8 +12,9 @@ router =
     pages "/blog/:page", unquote(Controller),
       id: :blog,
       from: "priv/blog/*.md",
+      attrs: [:date],
+      sort: {:date, :desc},
       assigns: %{foo: "bar"},
-      index_path: "/blog",
       log: false
 
     pages "/:page", unquote(Controller),
