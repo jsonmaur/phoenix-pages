@@ -6,11 +6,12 @@ defmodule PhoenixPages do
 
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
+      @behaviour PhoenixPages
       @before_compile PhoenixPages
 
       import PhoenixPages, only: [pages: 3]
 
-      {lexers, lexers_hash} = PhoenixPages.list_lexers()
+      {lexers, lexers_hash} = PhoenixPages.Helpers.list_lexers()
       for lexer <- lexers, do: Application.ensure_all_started(lexer)
 
       @phoenix_pages_app_dir Keyword.fetch!(opts, :otp_app) |> Application.app_dir()
@@ -21,20 +22,23 @@ defmodule PhoenixPages do
     end
   end
 
-  @doc false
   defmacro __before_compile__(_env) do
     quote do
+      @impl true
       def get_pages(id), do: :error
 
+      @impl true
       def get_pages!(id) do
-        raise PhoenixPages.NoPagesError, id: id
+        raise PhoenixPages.NotFoundError, id: id
       end
 
+      # this can screw things up in development (-_-)
+      # if having problems with not recompiling for tests, run `MIX_ENV=test mix compile --force`
       def __mix_recompile__? do
         Enum.any?([
-          PhoenixPages.list_lexers() |> elem(1) != @phoenix_pages_lexers_hash,
+          PhoenixPages.Helpers.list_lexers() |> elem(1) != @phoenix_pages_lexers_hash,
           Enum.any?(@phoenix_pages_from, fn {from, hash} ->
-            PhoenixPages.list_files(@phoenix_pages_app_dir, from) |> elem(1) != hash
+            PhoenixPages.Helpers.list_files(@phoenix_pages_app_dir, from) |> elem(1) != hash
           end)
         ])
       end
@@ -47,12 +51,12 @@ defmodule PhoenixPages do
     quote bind_quoted: [path: path, plug: plug, opts: opts] do
       {id, opts} = Keyword.pop(opts, :id)
       {from, opts} = Keyword.pop(opts, :from, "priv/pages/**/*.md")
-      {{sort_key, sort_dir}, opts} = Keyword.pop(opts, :sort, {:path, :asc})
       {index_path, opts} = Keyword.pop(opts, :index_path)
       {attrs, opts} = Keyword.pop(opts, :attrs, [])
       {render_opts, opts} = Keyword.pop(opts, :render_options, @phoenix_pages_render_opts)
+      {files, hash} = PhoenixPages.Helpers.list_files(@phoenix_pages_app_dir, from)
 
-      {files, hash} = PhoenixPages.list_files(@phoenix_pages_app_dir, from)
+      assigns = Keyword.get(opts, :assigns, %{})
 
       pages =
         for file <- files do
@@ -61,66 +65,60 @@ defmodule PhoenixPages do
           path = PhoenixPages.Helpers.into_path(path, file, from)
           filename = Path.relative_to(file, @phoenix_pages_app_dir)
 
-          file
-          |> File.read!()
-          |> PhoenixPages.Frontmatter.parse(filename)
-          |> PhoenixPages.Frontmatter.cast(attrs)
-          |> PhoenixPages.render(filename, render_opts)
-          |> Map.merge(%{path: path, filename: filename})
-        end
-        |> Enum.sort_by(&Map.get(&1, sort_key), sort_dir)
+          {data, content} = File.read!(file) |> PhoenixPages.Frontmatter.parse(filename)
+          assigns = Map.merge(assigns, PhoenixPages.Frontmatter.cast(data, attrs))
 
-      @phoenix_pages pages
-      @phoenix_pages_from {from, hash}
+          inner_content = PhoenixPages.render(content, filename, render_opts)
+          assigns = Map.put(assigns, :inner_content, inner_content)
+
+          struct!(PhoenixPages.Page,
+            path: path,
+            filename: filename,
+            content: content,
+            assigns: assigns
+          )
+        end
 
       if index_path do
         Phoenix.Router.get(index_path, plug, :index, opts)
       end
 
       for page <- pages do
-        assigns = Keyword.get(opts, :assigns, %{})
-        opts = Keyword.put(opts, :assigns, Map.merge(assigns, page))
-
+        opts = Keyword.put(opts, :assigns, page.assigns)
         Phoenix.Router.get(page.path, plug, :show, opts)
       end
 
+      @phoenix_pages pages
+      @phoenix_pages_from {from, hash}
+
       if id do
-        def get_pages!(unquote_splicing([id])), do: @phoenix_pages
-        def get_pages(unquote_splicing([id])), do: {:ok, get_pages!(unquote(id))}
+        @impl true
+        def get_pages(unquote_splicing([id])) do
+          # the page id is guaranteed to exist, as it's being defined below
+          {:ok, get_pages!(unquote(id))}
+        end
+
+        @impl true
+        def get_pages!(unquote_splicing([id])) do
+          @phoenix_pages
+        end
       end
     end
   end
 
   @doc false
-  def list_files(path, pattern) do
-    path
-    |> Path.join(pattern)
-    |> Path.wildcard()
-    |> PhoenixPages.Helpers.hash()
+  def render(content, filename, opts) do
+    case Path.extname(filename) do
+      ext when ext in [".md", ".markdown"] ->
+        markdown_opts = Keyword.get(opts, :markdown, [])
+        PhoenixPages.Markdown.render(content, filename, markdown_opts)
+
+      _ ->
+        content
+    end
   end
 
-  @doc false
-  def list_lexers do
-    lexers =
-      for {app, _, _} <- Application.loaded_applications(),
-          match?("makeup_" <> _, Atom.to_string(app)),
-          do: app
+  @callback get_pages(atom | binary) :: {:ok, list(page)} | :error
 
-    PhoenixPages.Helpers.hash(lexers)
-  end
-
-  @doc false
-  def render(data, filename, opts) do
-    inner_content =
-      case Path.extname(filename) do
-        ext when ext in [".md", ".markdown"] ->
-          markdown_opts = Keyword.get(opts, :markdown, [])
-          PhoenixPages.Markdown.render(data.raw_content, filename, markdown_opts)
-
-        _ ->
-          data.raw_content
-      end
-
-    Map.put(data, :inner_content, inner_content)
-  end
+  @callback get_pages!(atom | binary) :: list(page)
 end

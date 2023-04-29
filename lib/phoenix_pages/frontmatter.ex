@@ -2,14 +2,17 @@ defmodule PhoenixPages.Frontmatter do
   @moduledoc false
 
   def parse(contents, filename \\ nil) do
-    with [fm, body] <- String.split(contents, ~r/\n---\n/, parts: 2),
+    with [fm, content] <- String.split(contents, ~r/\n---\n/, parts: 2),
          {:ok, %{} = data} <- String.trim(fm, "---") |> YamlElixir.read_from_string() do
-      data
-      |> Enum.into(%{}, fn {k, v} -> {String.to_existing_atom(k), v} end)
-      |> Map.put(:raw_content, body)
+      data =
+        Enum.into(data, %{}, fn {k, v} ->
+          {String.to_existing_atom(k), v}
+        end)
+
+      {data, content}
     else
-      [body] ->
-        %{raw_content: body}
+      [content] ->
+        {%{}, content}
 
       {:error, %YamlElixir.ParsingError{} = error} ->
         raise PhoenixPages.ParseError, filename: filename, line: error.line, column: error.column
@@ -19,9 +22,8 @@ defmodule PhoenixPages.Frontmatter do
     end
   end
 
-  def cast(data, attrs) when is_list(attrs) do
-    attrs = [:raw_content | attrs]
 
+  def cast(data, attrs) when is_list(attrs) do
     Enum.into(attrs, %{}, fn v ->
       case v do
         {attr, default} -> {attr, Map.get(data, attr, default)}

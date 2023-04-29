@@ -8,6 +8,20 @@ defmodule PhoenixPages.HelpersTest do
              {["b", "c", "a"], <<144, 1, 80, 152, 60, 210, 79, 176, 214, 150, 63, 125, 40, 225, 127, 114>>}
   end
 
+  test "list_files/2" do
+    path = Path.expand("../../priv/pages", __DIR__)
+
+    assert {[file1, file2], hash} = list_files(path, "**/*.{md,markdown}")
+    assert file1 =~ "priv/pages/hello.md"
+    assert file2 =~ "priv/pages/hello/there.markdown"
+    assert byte_size(hash) == 16
+  end
+
+  test "list_lexers/0" do
+    assert {[:makeup_json], hash} = list_lexers()
+    assert byte_size(hash) == 16
+  end
+
   test "slugify/1" do
     assert slugify("foo.md") == "foo.md"
     assert slugify("foo/bar.md") == "foo/bar.md"

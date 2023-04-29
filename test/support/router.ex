@@ -4,6 +4,7 @@ router =
     use PhoenixPages, otp_app: :phoenix_pages
 
     pages "/:page", unquote(Controller),
+      from: "priv/pages/**/*.{md,markdown}",
       attrs: [lorem: "ipsum"],
       render_options: [markdown: [smartypants: false]],
       log: false
@@ -11,9 +12,12 @@ router =
     pages "/blog/:page", unquote(Controller),
       id: :blog,
       from: "priv/blog/*.md",
-      sort: {:path, :desc},
       assigns: %{foo: "bar"},
       index_path: "/blog",
+      log: false
+
+    pages "/:page", unquote(Controller),
+      from: "priv/pages/**/*.txt",
       log: false
   end
 

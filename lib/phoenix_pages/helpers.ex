@@ -11,6 +11,22 @@ defmodule PhoenixPages.Helpers do
     {list, hash}
   end
 
+  def list_files(path, pattern) do
+    path
+    |> Path.join(pattern)
+    |> Path.wildcard()
+    |> hash()
+  end
+
+  def list_lexers do
+    lexers =
+      for {app, _, _} <- Application.loaded_applications(),
+          match?("makeup_" <> _, Atom.to_string(app)),
+          do: app
+
+    hash(lexers)
+  end
+
   def slugify(filename) do
     ext = Path.extname(filename)
 

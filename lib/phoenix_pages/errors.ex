@@ -1,4 +1,8 @@
-defmodule PhoenixPages.NoPagesError do
+defmodule PhoenixPages.NotFoundError do
+  @moduledoc """
+  Exception raised when `get_pages/1` or `get_pages!/1` is called with an ID that was not found.
+  """
+
   defexception [:id, :message]
 
   @impl true
@@ -8,6 +12,10 @@ defmodule PhoenixPages.NoPagesError do
 end
 
 defmodule PhoenixPages.ParseError do
+  @moduledoc """
+  Exception raised when a page's frontmatter cannot be parsed.
+  """
+
   defexception [:filename, :line, :column, :message]
 
   @impl true

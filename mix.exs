@@ -16,7 +16,6 @@ defmodule PhoenixPages.MixProject do
       source_url: @url,
       homepage_url: "#{@url}#readme",
       description: "",
-      authors: ["Jason Maurer"],
       package: [
         licenses: ["MIT"],
         links: %{"GitHub" => @url},
@@ -24,7 +23,8 @@ defmodule PhoenixPages.MixProject do
       ],
       docs: [
         main: "readme",
-        extras: ["README.md"]
+        extras: ["README.md"],
+        authors: ["Jason Maurer"]
       ]
     ]
   end
