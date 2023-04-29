@@ -4,42 +4,45 @@ defmodule PhoenixPages do
   Check out the [README](readme.html) to get started.
   """
 
+  defmodule ParseError do
+    defexception [:message]
+  end
+
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
-      otp_app = Keyword.fetch!(opts, :otp_app)
-      render_opts = Keyword.get(opts, :render_options, [])
 
       import PhoenixPages, only: [pages: 3]
 
-      @before_compile PhoenixPages
-      @phoenix_pages_app_dir Application.app_dir(otp_app)
-      @phoenix_pages_render_opts render_opts
+      {lexers, lexers_hash} = PhoenixPages.list_lexers()
+      for lexer <- lexers, do: Application.ensure_all_started(lexer)
 
-      Module.register_attribute(__MODULE__, :phoenix_pages, accumulate: true)
-    end
-  end
+      @phoenix_pages_app_dir Keyword.fetch!(opts, :otp_app) |> Application.app_dir()
+      @phoenix_pages_render_opts Keyword.get(opts, :render_options, [])
+      @phoenix_pages_lexers_hash lexers_hash
 
-  @doc false
-  defmacro __before_compile__(_env) do
-    quote do
+      Module.register_attribute(__MODULE__, :phoenix_pages_from, accumulate: true)
+
       def __mix_recompile__? do
-        Enum.any?(@phoenix_pages, fn {from, hash} ->
-          PhoenixPages.list_files(@phoenix_pages_app_dir, from) |> elem(1) != hash
-        end)
+        Enum.any?([
+          PhoenixPages.list_lexers() |> elem(1) != @phoenix_pages_lexers_hash,
+          Enum.any?(@phoenix_pages_from, fn {from, hash} ->
+            PhoenixPages.list_files(@phoenix_pages_app_dir, from) |> elem(1) != hash
+          end)
+        ])
       end
     end
   end
 
   @doc """
   """
-  defmacro pages(path, plug, opts) do
+  defmacro pages(path, plug, opts \\ []) do
     quote bind_quoted: [path: path, plug: plug, opts: opts] do
-      {render_opts, opts} = Keyword.pop(opts, :render_options, @phoenix_pages_render_opts)
       {from, opts} = Keyword.pop(opts, :from, "priv/pages/**/*.md")
       {{sort_key, sort_dir}, opts} = Keyword.pop(opts, :sort, {:path, :asc})
       {index_path, opts} = Keyword.pop(opts, :index_path)
       {attrs, opts} = Keyword.pop(opts, :attrs, [])
       {assigns, opts} = Keyword.pop(opts, :assigns, %{})
+      {render_opts, opts} = Keyword.pop(opts, :render_options, @phoenix_pages_render_opts)
       {files, hash} = PhoenixPages.list_files(@phoenix_pages_app_dir, from)
 
       @phoenix_pages {from, hash}
@@ -51,14 +54,12 @@ defmodule PhoenixPages do
           path = PhoenixPages.Helpers.into_path(path, file, from)
           filename = Path.relative_to(file, @phoenix_pages_app_dir)
 
-          data =
-            file
-            |> File.read!()
-            |> PhoenixPages.Frontmatter.parse(filename)
-            |> PhoenixPages.Frontmatter.cast(attrs)
-            |> PhoenixPages.render(filename, render_opts)
-
-          Map.merge(%{path: path, filename: filename}, data)
+          file
+          |> File.read!()
+          |> PhoenixPages.Frontmatter.parse(filename)
+          |> PhoenixPages.Frontmatter.cast(attrs)
+          |> PhoenixPages.render(filename, render_opts)
+          |> Map.merge(%{path: path, filename: filename})
         end
         |> Enum.sort_by(&Map.get(&1, sort_key), sort_dir)
 
@@ -71,7 +72,6 @@ defmodule PhoenixPages do
 
       for page <- pages do
         opts = Keyword.put(opts, :assigns, Map.merge(opts[:assigns], page))
-
         Phoenix.Router.get(page.path, plug, :show, opts)
       end
     end
@@ -79,26 +79,34 @@ defmodule PhoenixPages do
 
   @doc false
   def list_files(path, pattern) do
-    files =
-      path
-      |> Path.join(pattern)
-      |> Path.wildcard()
-      |> Enum.sort()
+    path
+    |> Path.join(pattern)
+    |> Path.wildcard()
+    |> PhoenixPages.Helpers.hash()
+  end
 
-    {files, :erlang.md5(files)}
+  @doc false
+  def list_lexers do
+    lexers =
+      for {app, _, _} <- Application.loaded_applications(),
+          match?("makeup_" <> _, Atom.to_string(app)),
+          do: app
+
+    PhoenixPages.Helpers.hash(lexers)
   end
 
   @doc false
   def render(data, filename, opts) do
-    case Path.extname(filename) do
-      ext when ext in [".md", ".markdown"] ->
-        markdown_opts = Keyword.get(opts, :markdown, [])
-        inner_content = PhoenixPages.Markdown.render(data.raw_content, filename, markdown_opts)
+    inner_content =
+      case Path.extname(filename) do
+        ext when ext in [".md", ".markdown"] ->
+          markdown_opts = Keyword.get(opts, :markdown, [])
+          PhoenixPages.Markdown.render(data.raw_content, filename, markdown_opts)
 
-        Map.put(data, :inner_content, inner_content)
+        _ ->
+          data.raw_content
+      end
 
-      _ ->
-        data
-    end
+    Map.put(data, :inner_content, inner_content)
   end
 end

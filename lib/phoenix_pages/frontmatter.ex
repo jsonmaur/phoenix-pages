@@ -12,10 +12,10 @@ defmodule PhoenixPages.Frontmatter do
         %{raw_content: body}
 
       {:error, %YamlElixir.ParsingError{} = error} ->
-        raise PhoenixPages.Error, %{filename: filename, line: error.line, column: error.column}
+        raise PhoenixPages.ParseError, message: "could not parse #{filename}:#{error.line}:#{error.column}"
 
       _ ->
-        raise PhoenixPages.Error, %{filename: filename}
+        raise PhoenixPages.ParseError, message: "could not parse #{filename}"
     end
   end
 

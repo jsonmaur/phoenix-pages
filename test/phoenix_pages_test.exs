@@ -1,36 +1,34 @@
 defmodule PhoenixPagesTest do
   use ExUnit.Case, async: true
 
-  @fixtures_path Path.expand("fixtures", __DIR__)
+  import PhoenixPages
 
   test "list_files/2" do
-    assert {[file1, file2], hash} = PhoenixPages.list_files(@fixtures_path, "**/*.md")
-    assert file1 =~ "test/fixtures/foo.md"
-    assert file2 =~ "test/fixtures/foo/bar.md"
+    path = Path.expand("../priv/pages", __DIR__)
+
+    assert {[file1, file2], hash} = list_files(path, "**/*.md")
+    assert file1 =~ "priv/pages/hello.md"
+    assert file2 =~ "priv/pages/hello/there.md"
+    assert byte_size(hash) == 16
+  end
+
+  test "list_lexers/0" do
+    assert {[:makeup_json], hash} = list_lexers()
     assert byte_size(hash) == 16
   end
 
   describe "render/3" do
-    setup do
-      %{
-        md: %{raw_content: "# Hello"},
-        txt: %{raw_content: "Hello"}
-      }
+    test "should render a markdown file" do
+      data = %{raw_content: "# Hello"}
+
+      assert render(data, "foo.md", []).inner_content == {:safe, "<h1>\nHello</h1>\n"}
+      assert render(data, "foo.markdown", []).inner_content == {:safe, "<h1>\nHello</h1>\n"}
     end
 
-    test "should render a markdown file", ctx do
-      assert PhoenixPages.render(ctx.md, "foobar.md", []).inner_content == {:safe, "<h1>\nHello</h1>\n"}
-      assert PhoenixPages.render(ctx.md, "foobar.markdown", []).inner_content == {:safe, "<h1>\nHello</h1>\n"}
-    end
+    test "should render a raw text file" do
+      data = %{raw_content: "# Hello"}
 
-    test "should render a markdown file with options", ctx do
-      assert PhoenixPages.render(ctx.md, "foobar.md", markdown: [compact_output: true]).inner_content ==
-               {:safe, "<h1>Hello</h1>"}
-    end
-
-    test "should render a raw text file", ctx do
-      assert PhoenixPages.render(ctx.txt, "foobar.txt", []).raw_content == "Hello"
-      refute PhoenixPages.render(ctx.txt, "foobar.txt", [])[:inner_content]
+      assert render(data, "foobar.txt", []).inner_content == "# Hello"
     end
   end
 end

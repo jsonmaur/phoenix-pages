@@ -1,6 +1,16 @@
 defmodule PhoenixPages.Helpers do
   @moduledoc false
 
+  def hash(list) do
+    hash =
+      list
+      |> Enum.map(&to_string/1)
+      |> Enum.sort()
+      |> :erlang.md5()
+
+    {list, hash}
+  end
+
   def slugify(filename) do
     ext = Path.extname(filename)
 

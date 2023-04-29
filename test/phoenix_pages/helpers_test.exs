@@ -3,6 +3,11 @@ defmodule PhoenixPages.HelpersTest do
 
   import PhoenixPages.Helpers
 
+  test "hash/1" do
+    assert hash(["b", "c", "a"]) ==
+             {["b", "c", "a"], <<144, 1, 80, 152, 60, 210, 79, 176, 214, 150, 63, 125, 40, 225, 127, 114>>}
+  end
+
   test "slugify/1" do
     assert slugify("foo.md") == "foo.md"
     assert slugify("foo/bar.md") == "foo/bar.md"
