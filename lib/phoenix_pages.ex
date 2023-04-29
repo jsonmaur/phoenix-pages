@@ -4,10 +4,6 @@ defmodule PhoenixPages do
   Check out the [README](readme.html) to get started.
   """
 
-  defmodule Error do
-    defexception [:message]
-  end
-
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
       @before_compile PhoenixPages
@@ -31,7 +27,7 @@ defmodule PhoenixPages do
       def get_pages(id), do: :error
 
       def get_pages!(id) do
-        raise Error, "no pages were defined with id: #{inspect(id)}"
+        raise PhoenixPages.NoPagesError, id: id
       end
 
       def __mix_recompile__? do

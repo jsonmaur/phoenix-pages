@@ -1,14 +1,7 @@
 defmodule PhoenixPagesTest do
-  use ExUnit.Case, async: true
+  use PhoenixPages.ConnCase, async: true
 
   import PhoenixPages
-  import Phoenix.ConnTest
-
-  @endpoint Router
-
-  setup do
-    %{conn: build_conn()}
-  end
 
   test "should add files to external resource list" do
     assert [[hello], [there], [post1], [post2]] =
@@ -96,7 +89,7 @@ defmodule PhoenixPagesTest do
     end
 
     test "should raise error when called with invalid id" do
-      assert_raise PhoenixPages.Error, "no pages were defined with id: :invalid", fn ->
+      assert_raise PhoenixPages.NoPagesError, "no pages found for id :invalid", fn ->
         Router.get_pages!(:invalid)
       end
     end
