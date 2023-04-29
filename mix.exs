@@ -8,6 +8,7 @@ defmodule PhoenixPages.MixProject do
       app: :phoenix_pages,
       version: "1.0.0",
       elixir: "~> 1.13",
+      elixirc_paths: Mix.env() |> elixirc_paths(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -33,6 +34,9 @@ defmodule PhoenixPages.MixProject do
       extra_applications: [:logger]
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
     [

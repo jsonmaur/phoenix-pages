@@ -24,13 +24,13 @@ defmodule PhoenixPages.FrontmatterTest do
     end
 
     test "should raise error with invalid frontmatter" do
-      assert_raise PhoenixPages.ParseError, "could not parse foo.md", fn ->
+      assert_raise PhoenixPages.Error, "could not parse foo.md", fn ->
         parse("---\nfoo\nbar baz\n---\nHello", "foo.md")
       end
     end
 
     test "should raise error when yaml_elixir does not return map" do
-      assert_raise PhoenixPages.ParseError, "could not parse foo.md", fn ->
+      assert_raise PhoenixPages.Error, "could not parse foo.md", fn ->
         parse("---\nfoo bar\n---\nHello", "foo.md")
       end
     end
