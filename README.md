@@ -2,6 +2,21 @@
 
 Create blogs, documentation sites, and other static pages in Phoenix. This library integrates seamlessly into your router and comes with built-in support for rendering markdown with frontmatter, syntax highlighting, compile-time caching, and more.
 
+<details>
+  <summary><b>Table of contents</b></summary>
+
+  <ul>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#formatting">Formatting</a></li>
+    <li><a href="#frontmatter">Frontmatter</a></li>
+    <li><a href="#syntax-highlighting">Syntax Highlighting</a></li>
+    <li><a href="#index-pages">Index Pages</a></li>
+    <li><a href="#defining-paths">Defining Paths</a></li>
+    <li><a href="#extended-markdown">Extended Markdown</a></li>
+    <li><a href="#local-development">Local Development</a></li>
+  </ul>
+</details>
+
 ## Getting Started
 
 ```elixir
@@ -61,6 +76,16 @@ Lastly, add a template at `lib/myapp_web/controllers/page_html/show.html.heex`. 
 ```
 
 That's it! Now try creating a file at `priv/pages/hello.md` and visiting `/hello`.
+
+## Formatting
+
+To prevent `mix format` from adding parenthesis to the `pages` macro similar to the other Phoenix Router macros, add `:phoenix_pages` to `.formatter.exs`:
+
+```elixir
+[
+  import_deps: [:ecto, :ecto_sql, :phoenix, :phoenix_pages]
+]
+```
 
 ## Frontmatter
 
@@ -253,11 +278,9 @@ end
 </.link>
 ```
 
-You can take this even further by finding related pages, grouping by tags, etc.
-
 ### Sorting
 
-The pages returned from the `get_pages` functions will be sorted by the filesystem's default sorting (usually by filename). If you want to specify a different sorting order during compilation rather than in the controller on every page load, use the [`:sort`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option:
+The pages returned from the `get_pages` functions will be sorted by filename. If you want to specify a different order during compilation rather than in the controller on every page load, use the [`:sort`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option:
 
 ```elixir
 pages "/blog/:page", BlogController, :show,
@@ -271,7 +294,7 @@ Any attribute value from the frontmatter can be defined as the sort value.
 
 ## Defining Paths
 
-When defining the pages path, the `:page` segment will get replaced for each generated page **during compilation** with the values derived from `**` and `*`. This is different than segments in regular routes, which are parsed **during runtime** into the `params` attribute of the controller function.
+When defining the pages path, the `:page` segment will be replaced for each generated page **during compilation** with the values derived from `**` and `*`. This is different than segments in regular routes, which are parsed **during runtime** into the `params` attribute of the controller function.
 
 For example, let's say you have the following file structure:
 
@@ -283,7 +306,7 @@ For example, let's say you have the following file structure:
 │  │  │  ├── baz.md
 ```
 
-Defining `pages "/:page", from: "priv/pages/**/*.md"` in your router will create two routes: `get "/foo"` and `get "/bar/baz"`. You can put the `:page` segment anywhere in the path, such as `/blog/:page`, and it will work as expected creating `get "/blog/foo"` and `get "/blog/bar/baz"`.
+Defining `pages "/:page", from: "priv/pages/**/*.md"` in your router will create two routes: `get "/foo"` and `get "/bar/baz"`. You can even put the `:page` segment anywhere in the path, such as `/blog/:page`, and it will work as expected creating `get "/blog/foo"` and `get "/blog/bar/baz"`.
 
 ### Capture Groups
 
@@ -293,21 +316,7 @@ Let's say you have the same file structure as above, but don't want the `baz` pa
 
 Capture group variables will contain the value of the `**` and `*` chunks in order, starting at `$1`. Keep in mind that `**` will match all files and zero or more directories and subdirectories, and `*` will match any number of characters up to the end of the filename, the next dot, or the next slash.
 
-For more info on the wildcard patterns, check out the documentation for [Path.wildcard/2](https://hexdocs.pm/elixir/1.13/Path.html#wildcard/2).
-
-## Formatting
-
-To prevent `mix format` from adding parenthesis to the `pages` macro similar to the other Phoenix Router macros, add `:phoenix_pages` to `.formatter.exs`:
-
-```elixir
-[
-  import_deps: [:ecto, :ecto_sql, :phoenix, :phoenix_pages]
-]
-```
-
-## Local Development
-
-If you add, remove, or change pages while running `mix phx.server`, they will automatically be replaced in the cache and you don't have to restart for them to take effect. To live reload when a page changes, add `~r"priv/pages/.*(md)$"` to the patterns list of the Endpoint config in `config/dev.exs`.
+For more info on the wildcard patterns, check out [Path.wildcard/2](https://hexdocs.pm/elixir/1.13/Path.html#wildcard/2).
 
 ## Extended Markdown
 
@@ -326,3 +335,7 @@ Attributes can be one of the following:
 - `{:name=value}`, `{:name="value"}`, or `{:name='value'}` to define any other attribute
 
 To define multiple attributes, separate them with spaces: `{:#id name=value}`.
+
+## Local Development
+
+If you add, remove, or change pages while running `mix phx.server`, they will automatically be replaced in the cache and you don't have to restart for them to take effect. To live reload when a page changes, add `~r"priv/pages/.*(md)$"` to the patterns list of the Endpoint config in `config/dev.exs`.
