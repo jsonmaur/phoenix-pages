@@ -2,20 +2,14 @@
 
 Create blogs, documentation sites, and other static pages in Phoenix. This library integrates seamlessly into your router and comes with built-in support for rendering markdown with frontmatter, syntax highlighting, compile-time caching, and more.
 
-<details>
-  <summary><b>Table of contents</b></summary>
-
-  <ul>
-    <li><a href="#getting-started">Getting Started</a></li>
-    <li><a href="#formatting">Formatting</a></li>
-    <li><a href="#frontmatter">Frontmatter</a></li>
-    <li><a href="#syntax-highlighting">Syntax Highlighting</a></li>
-    <li><a href="#index-pages">Index Pages</a></li>
-    <li><a href="#defining-paths">Defining Paths</a></li>
-    <li><a href="#extended-markdown">Extended Markdown</a></li>
-    <li><a href="#local-development">Local Development</a></li>
-  </ul>
-</details>
+- [Getting Started](#getting-started)
+- [Formatting](#formatting)
+- [Frontmatter](#frontmatter)
+- [Syntax Highlighting](#syntax-highlighting)
+- [Index Pages](#index-pages)
+- [Defining Paths](#defining-paths)
+- [Extended Markdown](#extended-markdown)
+- [Local Development](#local-development)
 
 ## Getting Started
 
