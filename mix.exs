@@ -6,7 +6,7 @@ defmodule PhoenixPages.MixProject do
   def project do
     [
       app: :phoenix_pages,
-      version: "1.0.0",
+      version: "0.1.0",
       elixir: "~> 1.13",
       elixirc_paths: Mix.env() |> elixirc_paths(),
       build_embedded: Mix.env() == :prod,
@@ -15,7 +15,7 @@ defmodule PhoenixPages.MixProject do
       aliases: aliases(),
       source_url: @url,
       homepage_url: "#{@url}#readme",
-      description: "",
+      description: "Blogs, docs, and static pages in Phoenix",
       package: [
         licenses: ["MIT"],
         links: %{"GitHub" => @url},

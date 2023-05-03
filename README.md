@@ -16,7 +16,7 @@ Create blogs, documentation sites, and other static pages in Phoenix. This libra
 ```elixir
 def deps do
   [
-    {:phoenix_pages, "~> 1.0"}
+    {:phoenix_pages, "~> 0.1"}
   ]
 end
 ```
