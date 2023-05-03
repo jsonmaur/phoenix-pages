@@ -5,6 +5,10 @@ defmodule PhoenixPages.Markdown do
 
   require Logger
 
+  # Renders markdown into HTML using Earmark and returns safe HTML.
+  #
+  # Uses highly opinionated markdown rendering options that can be customized. Also adds syntax
+  # highlighting using Makeup unless it's disabled in the options.
   def render(contents, filename, opts) do
     hard_breaks = Keyword.get(opts, :hard_breaks, false)
     wiki_links = Keyword.get(opts, :wiki_links, true)

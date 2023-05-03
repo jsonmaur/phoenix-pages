@@ -6,6 +6,10 @@ defmodule PhoenixPages.Highlight do
   @css_class "highlight"
   @inner_html_tag "span"
 
+  # Replaces all the non-inline code tag nodes with a syntax-highlighted version.
+  #
+  # The language defined in the code block must have an associated Makeup lexer installed in the
+  # application that is running. Otherwise no syntax highlighting will be applied.
   def replace_node({"code", attrs, ast, meta}) do
     lang = AstTools.find_att_in_node(attrs, "class", "") |> String.downcase()
 

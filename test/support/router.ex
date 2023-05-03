@@ -3,13 +3,13 @@ router =
     use Phoenix.Router
     use PhoenixPages, otp_app: :phoenix_pages
 
-    pages "/:page", unquote(Controller),
+    pages "/:page", unquote(Controller), :show,
       from: "priv/pages/**/*.{md,markdown}",
       attrs: [lorem: "ipsum"],
       render_options: [markdown: [smartypants: false]],
       log: false
 
-    pages "/blog/:page", unquote(Controller),
+    pages "/blog/:page", unquote(Controller), :show,
       id: :blog,
       from: "priv/blog/*.md",
       attrs: [:date],
@@ -17,7 +17,7 @@ router =
       assigns: %{foo: "bar"},
       log: false
 
-    pages "/:page", unquote(Controller),
+    pages "/:page", unquote(Controller), :show,
       from: "priv/pages/**/*.txt",
       log: false
   end

@@ -1,4 +1,4 @@
-locals_without_parens = [pages: 2, pages: 3]
+locals_without_parens = [pages: 3, pages: 4]
 
 [
   inputs: ["*.{ex,exs}", "{config,lib,test}/**/*.{ex,exs}"],
