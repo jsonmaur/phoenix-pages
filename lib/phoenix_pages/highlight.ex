@@ -54,9 +54,13 @@ defmodule PhoenixPages.Highlight do
     end
   end
 
-  defp lexer("html"), do: Makeup.Lexers.HTMLLexer
   defp lexer("eex"), do: Makeup.Lexers.EExLexer
   defp lexer("heex"), do: Makeup.Lexers.HEExLexer
+  defp lexer("html"), do: Makeup.Lexers.HTMLLexer
+  defp lexer("javascript"), do: Makeup.Lexers.JsLexer
+  defp lexer("gql"), do: MakeupGraphql
+  defp lexer("graphql"), do: MakeupGraphql
+  defp lexer("sql"), do: MakeupSql
 
   defp lexer(name) do
     "Elixir/Makeup/Lexers/#{name}_lexer"

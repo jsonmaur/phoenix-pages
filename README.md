@@ -178,7 +178,7 @@ Next, add a Makeup lexer for your specific language(s) to the project dependenci
 
 If your language of choice isn't supported, consider [writing a new Makeup lexer](https://github.com/elixir-makeup/makeup/blob/master/CONTRIBUTING.md#writing-a-new-lexer) to contribute to the community. Otherwise, you can use a JS-based syntax highlighter such as [highlight.js](https://highlightjs.org) by setting `code_class_prefix: "language-"` and `syntax_highlighting: false` in [`render_options`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options).
 
-#### ESBuild Example
+### ESBuild Example
 
 Using the [ESBuild installer](https://github.com/phoenixframework/esbuild), add the `env` option to `config/config.exs`:
 
@@ -198,7 +198,7 @@ Then in `app.js`:
 import "phoenix_pages/css/monokai.css";
 ```
 
-#### SASS Example
+### Sass Example
 
 Using the [Sass installer](https://github.com/CargoSense/dart_sass), add the `--load-path` flag to `config/config.exs`:
 
@@ -213,11 +213,11 @@ config :dart_sass,
 
 Then in `app.scss`:
 
-```sass
+```scss
 @import "phoenix_pages/css/monokai";
 ```
 
-#### Tailwind Example
+### Tailwind Example
 
 Install the `postcss-import` plugin as described [here](https://tailwindcss.com/docs/using-with-preprocessors#build-time-imports) and add the following to `assets/postcss.config.js`:
 
@@ -237,7 +237,7 @@ Then in `app.css`:
 
 ## Index Pages
 
-To create an index page with links to all the other pages, create a normal GET route and use the [`:id`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option alongside [`get_pages/1`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#c:get_pages/1) and [`get_pages!/1`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#c:get_pages!/1):
+To create an index page with links to all the other pages, create a normal GET route and use the [`id`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option alongside [`get_pages/1`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#c:get_pages/1) and [`get_pages!/1`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#c:get_pages!/1):
 
 ```elixir
 get "/blog", BlogController, :index
@@ -274,7 +274,7 @@ end
 
 ### Sorting
 
-The pages returned from the `get_pages` functions will be sorted by filename. If you want to specify a different order during compilation rather than in the controller on every page load, use the [`:sort`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option:
+The pages returned from the `get_pages` functions will be sorted by filename. If you want to specify a different order during compilation rather than in the controller on every page load, use the [`sort`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option:
 
 ```elixir
 pages "/blog/:page", BlogController, :show,
@@ -300,7 +300,7 @@ For example, let's say you have the following file structure:
 │  │  │  ├── baz.md
 ```
 
-Defining `pages "/:page", from: "priv/pages/**/*.md"` in your router will create two routes: `get "/foo"` and `get "/bar/baz"`. You can even put the `:page` segment anywhere in the path, such as `/blog/:page`, and it will work as expected creating `get "/blog/foo"` and `get "/blog/bar/baz"`.
+Defining `pages "/:page", from: "priv/pages/**/*.md"` in your router will create two routes: `get "/foo"` and `get "/bar/baz"`. You can even put the `:page` segment somewhere else in the path, such as `/blog/:page`, and it will work as expected creating `get "/blog/foo"` and `get "/blog/bar/baz"`.
 
 ### Capture Groups
 
@@ -332,4 +332,14 @@ To define multiple attributes, separate them with spaces: `{:#id name=value}`.
 
 ## Local Development
 
-If you add, remove, or change pages while running `mix phx.server`, they will automatically be replaced in the cache and you don't have to restart for them to take effect. To live reload when a page changes, add `~r"priv/pages/.*(md)$"` to the patterns list of the Endpoint config in `config/dev.exs`.
+If you add, remove, or change pages while running `mix phx.server`, they will automatically be replaced in the cache and you don't have to restart for them to take effect. To live reload when a page changes, add to the patterns list of the Endpoint config in `config/dev.exs`:
+
+```elixir
+config :myapp, MyAppWeb.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r"priv/pages/.*(md)$",
+      # ...
+    ]
+  ]
+```
