@@ -272,6 +272,8 @@ end
 </.link>
 ```
 
+All the page files are read and cached during compilation, so the `get_pages` functions will not actually read anything from the filesystem—making them very performant.
+
 ### Sorting
 
 The pages returned from the `get_pages` functions will be sorted by filename. If you want to specify a different order during compilation rather than in the controller on every page load, use the [`sort`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option:
