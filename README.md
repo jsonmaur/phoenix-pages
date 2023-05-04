@@ -297,11 +297,11 @@ When defining the pages path, the `:page` segment will be replaced for each gene
 For example, let's say you have the following file structure:
 
 ```
-├── priv/
-│  ├── pages/
-│  │  ├── foo.md
+┌── priv/
+│  ┌── pages/
+│  │  ┌── foo.md
 │  │  ├── bar/
-│  │  │  ├── baz.md
+│  │  │  ┌── baz.md
 ```
 
 Defining `pages "/:page", from: "priv/pages/**/*.md"` in your router will create two routes: `get "/foo"` and `get "/bar/baz"`. You can even put the `:page` segment somewhere else in the path, such as `/blog/:page`, and it will work as expected creating `get "/blog/foo"` and `get "/blog/bar/baz"`.
