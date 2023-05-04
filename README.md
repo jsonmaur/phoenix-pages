@@ -1,9 +1,9 @@
-<a href="https://github.com/jsonmaur/phoenix-pages/actions/workflows/test.yml"><img alt="Test Status" src="https://img.shields.io/github/actions/workflow/status/jsonmaur/phoenix-pages/test.yml?label=&style=for-the-badge&logo=github"></a> <a href="https://hexdocs.pm/phoenix_pages/"><img alt="Hex Version" src="https://img.shields.io/hexpm/v/phoenix_pages?style=for-the-badge&label=&logo=elixir" /></a>
+# Phoenix Pages
 
 Add blogs, documentation, and other static pages to Phoenix apps. This library integrates seamlessly into your router and comes with built-in support for rendering markdown with frontmatter, syntax highlighting, compile-time caching, and more.
 
+- [Installation](#installation)
 - [Getting Started](#getting-started)
-- [Formatting](#formatting)
 - [Frontmatter](#frontmatter)
 - [Syntax Highlighting](#syntax-highlighting)
 - [Index Pages](#index-pages)
@@ -11,7 +11,7 @@ Add blogs, documentation, and other static pages to Phoenix apps. This library i
 - [Extended Markdown](#extended-markdown)
 - [Local Development](#local-development)
 
-## Getting Started
+## Installation
 
 ```elixir
 def deps do
@@ -33,6 +33,8 @@ def router do
   end
 end
 ```
+
+## Getting Started
 
 Now you can add a new route using the [`pages/4`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4) macro:
 
@@ -71,7 +73,7 @@ Lastly, add a template at `lib/myapp_web/controllers/page_html/show.html.heex`. 
 
 That's it! Now try creating a file at `priv/pages/hello.md` and visiting `/hello`.
 
-## Formatting
+### Formatting
 
 To prevent `mix format` from adding parenthesis to the `pages` macro similar to the other Phoenix Router macros, add `:phoenix_pages` to `.formatter.exs`:
 
@@ -117,7 +119,29 @@ Valid attribute values will be available in the assigns:
 
 ## Syntax Highlighting
 
-Phoenix Pages uses the [Makeup](https://github.com/elixir-makeup/makeup) project for syntax highlighting. To enable, import a theme listed below into your CSS bundle. The specifics of doing this highly depend on your CSS configuration, but a few examples are included below. In most cases, you will need to import `phoenix_pages/css/monokai.css` (or whatever theme you choose) into your bundle and ensure `deps` is included as a vendor directory.
+Phoenix Pages uses the [Makeup](https://github.com/elixir-makeup/makeup) project for syntax highlighting. To enable, add a lexer for your specific language(s) to the project dependencies. Phoenix Pages will pick up the new dependency and start highlighting your code blocks without any further configuration. No lexers are included by default.
+
+<details>
+  <summary><b>Lexers</b></summary>
+
+  <ul>
+    <li><a href="https://github.com/elixir-makeup/makeup_c">C</a> - <code>`{:makeup_c, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/elixir-makeup/makeup_diff">Diff</a> - <code>`{:makeup_diff, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/elixir-makeup/makeup_elixir">Elixir</a> - <code>`{:makeup_elixir, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/elixir-makeup/makeup_erlang">Erlang</a> - <code>`{:makeup_erlang, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/Billzabob/makeup_graphql">GraphQL</a> - <code>`{:makeup_graphql, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/elixir-makeup/makeup_eex">(H)EEx</a> - <code>`{:makeup_eex, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/elixir-makeup/makeup_html">HTML</a> - <code>`{:makeup_html, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/maartenvanvliet/makeup_js">Javascript</a> - <code>`{:makeup_js, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/elixir-makeup/makeup_json">JSON</a> - <code>`{:makeup_json, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/dottorblaster/makeup_rust">Rust</a> - <code>`{:makeup_rust, "~> 0.0"}`</code></li>
+    <li><a href="https://github.com/Billzabob/makeup_sql">SQL</a> - <code>`{:makeup_sql, "~> 0.0"}`</code></li>
+  </ul>
+</details>
+
+If your language of choice isn't supported, consider [writing a new Makeup lexer](https://github.com/elixir-makeup/makeup/blob/master/CONTRIBUTING.md#writing-a-new-lexer) to contribute to the community. Otherwise, you can use a JS-based syntax highlighter such as [highlight.js](https://highlightjs.org) by setting `code_class_prefix: "language-"` and `syntax_highlighting: false` in [`render_options`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options).
+
+Next, import a theme listed below into your CSS bundle. The specifics of doing this highly depend on your CSS configuration, but a few examples are included below. In most cases, you will need to import `phoenix_pages/css/monokai.css` (or whatever theme you choose) into your bundle and ensure `deps` is included as a vendor directory.
 
 <details>
   <summary><b>Themes</b></summary>
@@ -155,28 +179,6 @@ Phoenix Pages uses the [Makeup](https://github.com/elixir-makeup/makeup) project
     <li><a href="https://elixir-makeup.github.io/makeup_demo/elixir.html#xcode">xcode</a></li>
   </ul>
 </details>
-
-Next, add a Makeup lexer for your specific language(s) to the project dependencies. Phoenix Pages will pick up the new dependency and start highlighting your code blocks without any further configuration. No lexers are included by default.
-
-<details>
-  <summary><b>Lexers</b></summary>
-
-  <ul>
-    <li><a href="https://github.com/elixir-makeup/makeup_c">C</a> - <code>`{:makeup_c, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/elixir-makeup/makeup_diff">Diff</a> - <code>`{:makeup_diff, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/elixir-makeup/makeup_elixir">Elixir</a> - <code>`{:makeup_elixir, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/elixir-makeup/makeup_erlang">Erlang</a> - <code>`{:makeup_erlang, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/Billzabob/makeup_graphql">GraphQL</a> - <code>`{:makeup_graphql, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/elixir-makeup/makeup_eex">(H)EEx</a> - <code>`{:makeup_eex, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/elixir-makeup/makeup_html">HTML</a> - <code>`{:makeup_html, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/maartenvanvliet/makeup_js">Javascript</a> - <code>`{:makeup_js, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/elixir-makeup/makeup_json">JSON</a> - <code>`{:makeup_json, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/dottorblaster/makeup_rust">Rust</a> - <code>`{:makeup_rust, "~> 0.0"}`</code></li>
-    <li><a href="https://github.com/Billzabob/makeup_sql">SQL</a> - <code>`{:makeup_sql, "~> 0.0"}`</code></li>
-  </ul>
-</details>
-
-If your language of choice isn't supported, consider [writing a new Makeup lexer](https://github.com/elixir-makeup/makeup/blob/master/CONTRIBUTING.md#writing-a-new-lexer) to contribute to the community. Otherwise, you can use a JS-based syntax highlighter such as [highlight.js](https://highlightjs.org) by setting `code_class_prefix: "language-"` and `syntax_highlighting: false` in [`render_options`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options).
 
 ### ESBuild Example
 
@@ -237,7 +239,7 @@ Then in `app.css`:
 
 ## Index Pages
 
-To create an index page with links to all the other pages, create a normal GET route and use the [`id`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option alongside [`get_pages/1`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#c:get_pages/1) and [`get_pages!/1`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#c:get_pages!/1):
+To create an index page with links to all the other pages, create a normal GET route and use the [`id`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#pages/4-options) option alongside [`get_pages/1`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#c:get_pages/1) and [`get_pages!/1`](https://hexdocs.pm/phoenix_pages/PhoenixPages.html#c:get_pages!/1) in your router:
 
 ```elixir
 get "/blog", BlogController, :index
@@ -340,6 +342,7 @@ If you add, remove, or change pages while running `mix phx.server`, they will au
 config :myapp, MyAppWeb.Endpoint,
   live_reload: [
     patterns: [
+      # ...
       ~r"priv/pages/.*(md)$",
       # ...
     ]
