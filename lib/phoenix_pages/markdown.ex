@@ -40,7 +40,7 @@ defmodule PhoenixPages.Markdown do
     }
 
     ast =
-      case EarmarkParser.as_ast(contents, parser_opts) do
+      case Earmark.Parser.as_ast(contents, parser_opts) do
         {:ok, ast, messages} ->
           log_messages(messages, filename)
           ast
