@@ -48,7 +48,7 @@ defmodule PhoenixPages.MarkdownTest do
 
       assert render(md, nil, []) ==
                {:safe,
-                "<p>\nHello<a href=\"#fn:foo\" id=\"fnref:foo\" class=\"footnote\" title=\"see footnote\">foo</a></p>\n<div class=\"footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn:foo\">\n<a class=\"reversefootnote\" href=\"#fnref:foo\" title=\"return to article\">&#x21A9;</a>      <p>\nbar      </p>\n    </li>\n  </ol>\n</div>\n"}
+                "<p>\nHello<a href=\"#fn:foo\" id=\"fnref:foo\" class=\"footnote\" title=\"see footnote\">foo</a></p>\n<div class=\"footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn:foo\">\n<a title=\"return to article\" class=\"reversefootnote\" href=\"#fnref:foo\">&#x21A9;</a>      <p>\nbar      </p>\n    </li>\n  </ol>\n</div>\n"}
     end
 
     test "should render markdown with code class prefix" do
