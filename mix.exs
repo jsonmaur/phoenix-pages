@@ -6,7 +6,7 @@ defmodule PhoenixPages.MixProject do
   def project do
     [
       app: :phoenix_pages,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.13",
       elixirc_paths: Mix.env() |> elixirc_paths(),
       build_embedded: Mix.env() == :prod,
